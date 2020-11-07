@@ -80,7 +80,7 @@ def inserts_count_check(context):
     repository = git.Repo(".")
     repository.remote().fetch()
 
-    master = repository.commit("remotes/origin/master")
+    master = repository.commit("remotes/origin/main")
 
     additions_count = 0
 
