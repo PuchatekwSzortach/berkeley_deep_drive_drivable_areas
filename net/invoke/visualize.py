@@ -15,7 +15,7 @@ def visualize_data(_context, config_path):
         config_path ([type]): [description]
     """
 
-    import icecream
+    import vlogging
 
     import net.data
     import net.utilities
@@ -28,4 +28,14 @@ def visualize_data(_context, config_path):
         labels_path=config["validation_labels_directory"]
     )
 
-    icecream.ic(len(data_loader.samples))
+    iterator = iter(data_loader)
+
+    logger = net.utilities.get_logger(path="/tmp/log.html")
+
+    for _ in range(3):
+
+        image = next(iterator)
+
+        logger.info(
+            vlogging.VisualRecord("deep drive", [image])
+        )
