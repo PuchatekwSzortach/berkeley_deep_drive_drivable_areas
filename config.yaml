@@ -1,4 +1,5 @@
 data_directory_on_host: "../../data"
 
-images_directory: "/data/berkeley_driving_dataset/bdd100k/images/"
 validation_labels_directory: "/data/berkeley_driving_dataset/bdd100k/labels/bdd100k_labels_images_val.json"
+validation_images_directory: "/data/berkeley_driving_dataset/bdd100k/images/100k/val"
+validation_segmentations_directory: "/data/berkeley_driving_dataset/bdd100k/drivable_maps/labels/val"

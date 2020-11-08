@@ -71,6 +71,8 @@ class BDDSamplesDataLoader:
             self.images_directory, sample["name"]
         )
 
-        image = cv2.imread(image_path)
+        segmentation_path = os.path.join(
+            self.segmentations_directory, os.path.splitext(sample["name"])[0] + "_drivable_id.png"
+        )
 
-        return image
+        return cv2.imread(image_path), cv2.imread(segmentation_path)

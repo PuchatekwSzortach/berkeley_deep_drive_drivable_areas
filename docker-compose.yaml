@@ -11,7 +11,7 @@ services:
             - log_data:/usr/share/nginx/html
 
     mlflow:
-        container_name: "deep_drive_nginx_mlflow"
+        container_name: "deep_drive_mlflow"
         image: "larribas/mlflow:1.9.1"
         command: --host 0.0.0.0 --backend-store-uri file:///data
         ports:

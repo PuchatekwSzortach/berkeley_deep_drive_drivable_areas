@@ -9,11 +9,8 @@ RUN apt update && apt install -y wget vim libgl1-mesa-dev
 COPY ./requirements.txt /tmp/requirements.txt
 RUN --mount=type=cache,mode=0777,target=/root/.cache/pip pip install -r /tmp/requirements.txt
 
-RUN useradd -ms /bin/bash app_user
-USER app_user
-
 # Setup bashrc
-COPY ./docker/bashrc /home/app_user/.bashrc
+COPY ./docker/bashrc /root/.bashrc
 
 # Setup PYTHONPATH
 ENV PYTHONPATH=.

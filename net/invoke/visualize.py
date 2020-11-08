@@ -15,6 +15,10 @@ def visualize_data(_context, config_path):
         config_path ([type]): [description]
     """
 
+    import random
+
+    import cv2
+    import tqdm
     import vlogging
 
     import net.data
@@ -23,19 +27,28 @@ def visualize_data(_context, config_path):
     config = net.utilities.read_yaml(config_path)
 
     data_loader = net.data.BDDSamplesDataLoader(
-        images_directory=config["images_directory"],
-        segmentations_directory=None,
+        images_directory=config["validation_images_directory"],
+        segmentations_directory=config["validation_segmentations_directory"],
         labels_path=config["validation_labels_directory"]
     )
 
-    iterator = iter(data_loader)
-
     logger = net.utilities.get_logger(path="/tmp/log.html")
 
-    for _ in range(3):
+    indices = random.choices(
+        population=range(len(data_loader)),
+        k=4
+    )
 
-        image = next(iterator)
+    for index in tqdm.tqdm(indices):
+
+        image, segmentation = data_loader[index]
+
+        original_resolution = image.shape
 
         logger.info(
-            vlogging.VisualRecord("deep drive", [image])
+            vlogging.VisualRecord(
+                title="deep drive",
+                imgs=[cv2.pyrDown(image) for image in [image, 100 * segmentation]],
+                footnotes=str(original_resolution)
+            )
         )
