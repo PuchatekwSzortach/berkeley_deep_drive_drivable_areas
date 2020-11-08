@@ -23,21 +23,29 @@ def build_app_container(context):
 
 
 @invoke.task
-def run(context):
+def run(context, config_path):
     """
-    Run docker container for the app
+    Run app container
 
-    :param context: invoke.Context instance
+    Args:
+        context (invoke.Context): invoke context instance
+        config_path (str): path to configuration file
     """
 
     import os
+
+    import net.utilities
+
+    config = net.utilities.read_yaml(config_path)
+
     # Define run options that need a bit of computations
     run_options = {
         # Use gpu runtime if host has cuda installed
         "gpu_capabilities": "--gpus all" if "/cuda/" in os.environ["PATH"] else "",
         # A bit of sourcery to create data volume that can be shared with docker-compose containers
         "log_data_volume": os.path.basename(os.path.abspath('.') + '_log_data'),
-        "network_name": os.path.basename(os.path.abspath(os.path.curdir)) + "_default"
+        "network_name": os.path.basename(os.path.abspath(os.path.curdir)) + "_default",
+        "data_directory_on_host": os.path.abspath(config["data_directory_on_host"]),
     }
 
     command = (
@@ -47,6 +55,7 @@ def run(context):
         "{gpu_capabilities} "
         "-v $PWD:/app:delegated "
         "-v {log_data_volume}:/tmp "
+        "-v {data_directory_on_host}:/data "
         # We don't expose .git directory to app container,
         # but mlflow client tries to acess it, so tell to be quiet when it fails
         "--env GIT_PYTHON_REFRESH=quiet "
