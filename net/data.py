@@ -3,6 +3,9 @@ Module with data related code
 """
 
 import json
+import os
+
+import cv2
 
 
 class BDDSamplesDataLoader:
@@ -49,3 +52,25 @@ class BDDSamplesDataLoader:
                     return True
 
         return False
+
+    def __len__(self):
+
+        return len(self.samples)
+
+    def __iter__(self):
+
+        for index in range(len(self)):
+
+            yield self[index]
+
+    def __getitem__(self, index):
+
+        sample = self.samples[index]
+
+        image_path = os.path.join(
+            self.images_directory, sample["name"]
+        )
+
+        image = cv2.imread(image_path)
+
+        return image

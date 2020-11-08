@@ -2,6 +2,9 @@
 Module with utilities
 """
 
+import logging
+import os
+
 import yaml
 
 
@@ -16,3 +19,21 @@ def read_yaml(path: str):
     with open(path) as file:
 
         return yaml.safe_load(file)
+
+
+def get_logger(path: str) -> logging.Logger:
+    """
+    Returns a logger configured to write to a file
+    :param path: path to file logger should write to
+    :return: logger instance
+    """
+
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    logger = logging.getLogger("image_retrieval")
+    file_handler = logging.FileHandler(path, mode="w")
+
+    logger.setLevel(logging.INFO)
+    logger.addHandler(file_handler)
+
+    return logger
