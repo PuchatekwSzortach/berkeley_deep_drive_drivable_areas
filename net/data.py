@@ -75,4 +75,5 @@ class BDDSamplesDataLoader:
             self.segmentations_directory, os.path.splitext(sample["name"])[0] + "_drivable_id.png"
         )
 
-        return cv2.imread(image_path), cv2.imread(segmentation_path)
+        # Only return first channel of segmentation image
+        return cv2.imread(image_path), cv2.imread(segmentation_path)[:, :, 0]

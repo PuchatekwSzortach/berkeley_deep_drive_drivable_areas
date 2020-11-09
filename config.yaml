@@ -3,3 +3,11 @@ data_directory_on_host: "../../data"
 validation_labels_directory: "/data/berkeley_driving_dataset/bdd100k/labels/bdd100k_labels_images_val.json"
 validation_images_directory: "/data/berkeley_driving_dataset/bdd100k/images/100k/val"
 validation_segmentations_directory: "/data/berkeley_driving_dataset/bdd100k/drivable_maps/labels/val"
+
+drivable_areas_indices_to_categories_map:
+  1: "direct"
+  2: "alternative"
+
+drivable_areas_indices_to_colors_map:
+  1: [80, 255, 90]
+  2: [230, 160, 60]
