@@ -93,7 +93,7 @@ class TrainingDataLoader:
         Constructor
 
         Args:
-            samples_data_loader (VOCSamplesDataLoader): samples data loader
+            samples_data_loader (BDDSamplesDataLoader): samples data loader
             batch_size (int): number of samples each yield should contain
         """
 
