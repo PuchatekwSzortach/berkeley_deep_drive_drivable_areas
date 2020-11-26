@@ -4,8 +4,10 @@ Module with data related code
 
 import json
 import os
+import typing
 
 import cv2
+import numpy as np
 
 
 class BDDSamplesDataLoader:
@@ -77,3 +79,47 @@ class BDDSamplesDataLoader:
 
         # Only return first channel of segmentation image
         return cv2.imread(image_path), cv2.imread(segmentation_path)[:, :, 0]
+
+
+class TrainingDataLoader:
+    """
+    Data loader that yields batches (images, segmentations) suitable for training segmentation model
+    """
+
+    def __init__(
+            self, samples_data_loader: BDDSamplesDataLoader,
+            batch_size: int) -> None:
+        """
+        Constructor
+
+        Args:
+            samples_data_loader (BDDSamplesDataLoader): samples data loader
+            batch_size (int): number of samples each yield should contain
+        """
+
+        self.samples_data_loader = samples_data_loader
+        self.batch_size = batch_size
+
+    def __iter__(self) -> typing.Iterator[typing.Tuple[np.ndarray, np.ndarray]]:
+        """
+        Iterator, yields tuples (images, segmentations)
+        """
+
+        iterator = iter(self.samples_data_loader)
+
+        images: list = []
+        segmentations: list = []
+
+        while True:
+
+            while len(images) < self.batch_size:
+
+                image, segmentation = next(iterator)
+
+                images.append(image)
+                segmentations.append(segmentation)
+
+            yield np.array(images), np.array(segmentations)
+
+            images.clear()
+            segmentations.clear()
