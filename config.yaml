@@ -15,3 +15,9 @@ drivable_areas_indices_to_categories_map:
 drivable_areas_indices_to_colors_map:
   1: [80, 255, 90]
   2: [230, 160, 60]
+
+training_image_dimensions:
+  width: 1280
+  height: 720
+
+batch_size: 8
