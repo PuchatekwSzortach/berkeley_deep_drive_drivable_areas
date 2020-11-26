@@ -31,7 +31,8 @@ def train(_context, config_path):
 
     training_data_loader = net.data.TrainingDataLoader(
         samples_data_loader=training_samples_loader,
-        batch_size=config["batch_size"]
+        batch_size=config["batch_size"],
+        use_training_mode=True
     )
 
     training_dataset = tf.data.Dataset.from_generator(
@@ -65,7 +66,8 @@ def train(_context, config_path):
 
     validation_data_loader = net.data.TrainingDataLoader(
         samples_data_loader=validatation_samples_loader,
-        batch_size=config["batch_size"]
+        batch_size=config["batch_size"],
+        use_training_mode=False
     )
 
     validation_dataset = tf.data.Dataset.from_generator(

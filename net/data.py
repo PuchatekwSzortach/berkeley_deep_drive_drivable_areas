@@ -4,6 +4,7 @@ Module with data related code
 
 import json
 import os
+import random
 import typing
 
 import cv2
@@ -88,38 +89,57 @@ class TrainingDataLoader:
 
     def __init__(
             self, samples_data_loader: BDDSamplesDataLoader,
-            batch_size: int) -> None:
+            batch_size: int,
+            use_training_mode: bool) -> None:
         """
         Constructor
 
         Args:
             samples_data_loader (BDDSamplesDataLoader): samples data loader
             batch_size (int): number of samples each yield should contain
+            use_training_mode (bool): if True, then samples are shuffled
         """
 
         self.samples_data_loader = samples_data_loader
         self.batch_size = batch_size
+        self.use_training_mode = use_training_mode
+
+        self.samples_indices = list(range(len(self.samples_data_loader)))
+
+        if self.use_training_mode is True:
+            random.shuffle(self.samples_indices)
+
+    def __len__(self) -> int:
+
+        return len(self.samples_data_loader) // self.batch_size
+
+    def __getitem__(self, index) -> typing.Tuple[np.ndarray, np.ndarray]:
+
+        # Get batch size numberr of samples indices
+        samples_batch_indices = self.samples_indices[index * self.batch_size:(index + 1) * self.batch_size]
+
+        images: list = []
+        segmentations: list = []
+
+        for sample_index in samples_batch_indices:
+
+            image, segmentation = self.samples_data_loader[sample_index]
+
+            images.append(image)
+            segmentations.append(segmentation)
+
+        return np.array(images), np.array(segmentations)
 
     def __iter__(self) -> typing.Iterator[typing.Tuple[np.ndarray, np.ndarray]]:
         """
         Iterator, yields tuples (images, segmentations)
         """
 
-        iterator = iter(self.samples_data_loader)
-
-        images: list = []
-        segmentations: list = []
-
         while True:
 
-            while len(images) < self.batch_size:
+            for batch_index in range(len(self)):
 
-                image, segmentation = next(iterator)
+                yield self[batch_index]
 
-                images.append(image)
-                segmentations.append(segmentation)
-
-            yield np.array(images), np.array(segmentations)
-
-            images.clear()
-            segmentations.clear()
+            if self.use_training_mode is True:
+                random.shuffle(self.samples_indices)

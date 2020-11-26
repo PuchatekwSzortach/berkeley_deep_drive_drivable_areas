@@ -27,10 +27,16 @@ def visualize_data(_context, config_path):
 
     config = net.utilities.read_yaml(config_path)
 
-    data_loader = net.data.BDDSamplesDataLoader(
-        images_directory=config["validation_images_directory"],
-        segmentations_directory=config["validation_segmentations_directory"],
-        labels_path=config["validation_labels_directory"]
+    samples_loader = net.data.BDDSamplesDataLoader(
+        images_directory=config["training_images_directory"],
+        segmentations_directory=config["training_segmentations_directory"],
+        labels_path=config["training_labels_directory"]
+    )
+
+    data_loader = net.data.TrainingDataLoader(
+        samples_data_loader=samples_loader,
+        batch_size=4,
+        use_training_mode=True
     )
 
     logger = net.utilities.get_logger(path="/tmp/log.html")
@@ -42,23 +48,26 @@ def visualize_data(_context, config_path):
 
     for index in tqdm.tqdm(indices):
 
-        image, segmentation = data_loader[index]
+        images, segmentations = data_loader[index]
 
-        original_resolution = image.shape
-
-        images = [
-            image,
+        overlay_segmentations = [
             net.processing.get_segmentation_overlay(
                 image=image,
                 segmentation=segmentation,
                 indices_to_colors_map=config["drivable_areas_indices_to_colors_map"]
-            )
+            ) for image, segmentation in zip(images, segmentations)
         ]
 
         logger.info(
             vlogging.VisualRecord(
-                title="deep drive",
+                title="images",
                 imgs=[cv2.pyrDown(image) for image in images],
-                footnotes=str(original_resolution)
+            )
+        )
+
+        logger.info(
+            vlogging.VisualRecord(
+                title="segmentations",
+                imgs=[cv2.pyrDown(image) for image in overlay_segmentations],
             )
         )
