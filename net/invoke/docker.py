@@ -46,6 +46,7 @@ def run(context, config_path):
         "log_data_volume": os.path.basename(os.path.abspath('.') + '_log_data'),
         "network_name": os.path.basename(os.path.abspath(os.path.curdir)) + "_default",
         "data_directory_on_host": os.path.abspath(config["data_directory_on_host"]),
+        "models_directory_on_host": os.path.abspath(config["models_directory_on_host"]),
     }
 
     command = (
@@ -56,6 +57,7 @@ def run(context, config_path):
         "-v $PWD:/app:delegated "
         "-v {log_data_volume}:/tmp "
         "-v {data_directory_on_host}:/data "
+        "-v {models_directory_on_host}:/models "
         # We don't expose .git directory to app container,
         # but mlflow client tries to acess it, so tell to be quiet when it fails
         "--env GIT_PYTHON_REFRESH=quiet "

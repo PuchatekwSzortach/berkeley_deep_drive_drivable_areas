@@ -8,9 +8,13 @@ validation_labels_directory: "/data/berkeley_driving_dataset/bdd100k/labels/bdd1
 validation_images_directory: "/data/berkeley_driving_dataset/bdd100k/images/100k/val"
 validation_segmentations_directory: "/data/berkeley_driving_dataset/bdd100k/drivable_maps/labels/val"
 
-drivable_areas_indices_to_categories_map:
-  1: "direct"
-  2: "alternative"
+models_directory_on_host: "../../data/voc_encoder_decoder_models"
+current_model_directory: "/models/current_model"
+
+categories: [
+  "background", "direct", "alternative"
+]
+
 
 drivable_areas_indices_to_colors_map:
   1: [80, 255, 90]
@@ -21,3 +25,6 @@ training_image_dimensions:
   height: 720
 
 batch_size: 8
+
+# Address from app container at which mlflow server can be reached
+mlflow_tracking_uri: "http://deep_drive_mlflow:5000"
