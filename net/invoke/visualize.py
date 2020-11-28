@@ -37,7 +37,8 @@ def visualize_data(_context, config_path):
         samples_data_loader=samples_loader,
         batch_size=4,
         target_image_dimensions=config["training_image_dimensions"],
-        use_training_mode=True
+        use_training_mode=True,
+        augmentations_pipeline=net.processing.get_augmentation_pipepline()
     )
 
     logger = net.utilities.get_logger(path="/tmp/log.html")
@@ -107,7 +108,8 @@ def visualize_predictions(_context, config_path):
         samples_data_loader=samples_loader,
         batch_size=4,
         target_image_dimensions=config["training_image_dimensions"],
-        use_training_mode=False
+        use_training_mode=False,
+        augmentations_pipeline=None
     )
 
     logger = net.utilities.get_logger(path="/tmp/log.html")

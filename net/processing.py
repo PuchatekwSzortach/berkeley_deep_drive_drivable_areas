@@ -3,6 +3,7 @@ Module with processing functionality
 """
 
 import cv2
+import imgaug
 import numpy as np
 
 
@@ -50,7 +51,7 @@ def pad_to_size(
     if len(image.shape) == 3:
 
         # Create canvas with desired shape and background image, paste image on top of it
-        canvas = np.ones(shape=(target_height, target_width, 3)) * color
+        canvas = np.ones(shape=(target_height, target_width, 3), dtype=image.dtype) * color
         canvas[upper_padding:target_height - lower_padding, left_padding:target_width - right_padding, :] = image
 
         # Return canvas
@@ -59,10 +60,28 @@ def pad_to_size(
     if len(image.shape) == 2:
 
         # Create canvas with desired shape and background image, paste image on top of it
-        canvas = np.ones(shape=(target_height, target_width)) * color
+        canvas = np.ones(shape=(target_height, target_width), dtype=image.dtype) * color
         canvas[upper_padding:target_height - lower_padding, left_padding:target_width - right_padding] = image
 
         # Return canvas
         return canvas
 
     raise ValueError("Invalid image shape")
+
+
+def get_augmentation_pipepline() -> imgaug.augmenters.Augmenter:
+    """
+    Get augmentation pipeline
+    """
+
+    return imgaug.augmenters.Sequential([
+        imgaug.augmenters.Fliplr(p=0.5),
+        imgaug.augmenters.SomeOf(
+            n=(0, 3),
+            children=[
+                imgaug.augmenters.Affine(rotate=(-10, 10)),
+                imgaug.augmenters.Affine(scale=(0.5, 1.5)),
+                imgaug.augmenters.Affine(shear={"x": (-20, 20)}),
+                imgaug.augmenters.Affine(shear={"y": (-20, 20)}),
+            ])
+    ])
