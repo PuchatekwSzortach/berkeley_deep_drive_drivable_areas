@@ -84,6 +84,8 @@ def visualize_predictions(_context, config_path):
         config_path (str): path to configuration file
     """
 
+    import random
+
     import tensorflow as tf
     import tqdm
 
@@ -105,7 +107,7 @@ def visualize_predictions(_context, config_path):
         samples_data_loader=samples_loader,
         batch_size=4,
         target_image_dimensions=config["training_image_dimensions"],
-        use_training_mode=True
+        use_training_mode=False
     )
 
     logger = net.utilities.get_logger(path="/tmp/log.html")
@@ -117,11 +119,14 @@ def visualize_predictions(_context, config_path):
         }
     )
 
-    iterator = iter(data_loader)
+    batches_indices = random.choices(
+        population=range(len(data_loader)),
+        k=4
+    )
 
-    for _ in tqdm.tqdm(range(4)):
+    for batch_index in tqdm.tqdm(batches_indices):
 
-        images, segmentations = next(iterator)
+        images, segmentations = data_loader[batch_index]
 
         net.logging.log_predictions(
             logger=logger,

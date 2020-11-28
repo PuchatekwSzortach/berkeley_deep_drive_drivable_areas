@@ -39,7 +39,7 @@ def log_predictions(
 
     logger.info(
         vlogging.VisualRecord(
-            title="predictions overlays",
+            title="ground truth segmentations",
             imgs=ground_truth_overlay_segmentations
         )
     )
@@ -57,7 +57,7 @@ def log_predictions(
 
     logger.info(
         vlogging.VisualRecord(
-            title="predictions overlays",
+            title="predicted segmentations",
             imgs=predictions_overlays
         )
     )
