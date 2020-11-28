@@ -8,7 +8,7 @@ validation_labels_directory: "/data/berkeley_driving_dataset/bdd100k/labels/bdd1
 validation_images_directory: "/data/berkeley_driving_dataset/bdd100k/images/100k/val"
 validation_segmentations_directory: "/data/berkeley_driving_dataset/bdd100k/drivable_maps/labels/val"
 
-models_directory_on_host: "../../data/voc_encoder_decoder_models"
+models_directory_on_host: "../../data/berkeley_deep_driving_models/"
 current_model_directory: "/models/current_model"
 
 categories: [
