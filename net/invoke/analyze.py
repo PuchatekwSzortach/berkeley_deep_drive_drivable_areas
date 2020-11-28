@@ -74,7 +74,8 @@ def analyze_predictions(_context, config_path):
         samples_data_loader=samples_loader,
         batch_size=4,
         target_image_dimensions=config["training_image_dimensions"],
-        use_training_mode=False
+        use_training_mode=False,
+        augmentations_pipeline=None
     )
 
     prediction_model = tf.keras.models.load_model(

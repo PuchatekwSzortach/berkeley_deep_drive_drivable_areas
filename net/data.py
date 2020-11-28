@@ -8,6 +8,7 @@ import random
 import typing
 
 import cv2
+import imgaug
 import numpy as np
 
 import net.processing
@@ -81,7 +82,9 @@ class BDDSamplesDataLoader:
         )
 
         # Only return first channel of segmentation image
-        return cv2.pyrDown(cv2.imread(image_path)), cv2.pyrDown(cv2.imread(segmentation_path)[:, :, 0])
+        return \
+            cv2.pyrDown(cv2.imread(image_path)), \
+            cv2.pyrDown(cv2.imread(segmentation_path)[:, :, 0]).astype(np.int32)
 
 
 class TrainingDataLoader:
@@ -93,7 +96,8 @@ class TrainingDataLoader:
             self, samples_data_loader: BDDSamplesDataLoader,
             batch_size: int,
             target_image_dimensions: dict,
-            use_training_mode: bool) -> None:
+            use_training_mode: bool,
+            augmentations_pipeline: imgaug.augmenters.Augmenter) -> None:
         """
         Constructor
 
@@ -102,6 +106,8 @@ class TrainingDataLoader:
             batch_size (int): number of samples each yield should contain
             target_image_dimensions (dict): dictionary specifying with and height images samples should have
             use_training_mode (bool): if True, then samples are shuffled
+            augmentations_pipeline (imgaug.augmenters.Augmenter): augmentation pipeline, optional.
+            Used only if use_training_mode is set to True
         """
 
         self.samples_data_loader = samples_data_loader
@@ -113,6 +119,8 @@ class TrainingDataLoader:
 
         if self.use_training_mode is True:
             random.shuffle(self.samples_indices)
+
+        self.augmentations_pipeline = augmentations_pipeline
 
     def __len__(self) -> int:
 
@@ -182,4 +190,19 @@ class TrainingDataLoader:
                 )
             )
 
-        return np.array(processed_images), np.array(processed_segmentations)
+        processed_images_array = np.array(processed_images, np.uint8)
+        processed_segmentations_array = np.array(processed_segmentations, np.int32)
+
+        if self.use_training_mode is True:
+
+            # imgaug expect slightly different format and data types than rest of code, so need to
+            # transform data to expected format for augmentations, then back
+            processed_images_array, processed_segmentations_array = self.augmentations_pipeline(
+                images=processed_images_array.astype(np.int32),
+                segmentation_maps=np.expand_dims(processed_segmentations_array, -1)
+            )
+
+            processed_images_array = processed_images_array.astype(np.uint8)
+            processed_segmentations_array = np.squeeze(processed_segmentations_array)
+
+        return processed_images_array, processed_segmentations_array
