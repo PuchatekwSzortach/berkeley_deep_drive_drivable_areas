@@ -10,6 +10,8 @@ import typing
 import cv2
 import numpy as np
 
+import net.processing
+
 
 class BDDSamplesDataLoader:
     """
@@ -79,7 +81,7 @@ class BDDSamplesDataLoader:
         )
 
         # Only return first channel of segmentation image
-        return cv2.imread(image_path), cv2.imread(segmentation_path)[:, :, 0]
+        return cv2.pyrDown(cv2.imread(image_path)), cv2.pyrDown(cv2.imread(segmentation_path)[:, :, 0])
 
 
 class TrainingDataLoader:
@@ -90,6 +92,7 @@ class TrainingDataLoader:
     def __init__(
             self, samples_data_loader: BDDSamplesDataLoader,
             batch_size: int,
+            target_image_dimensions: dict,
             use_training_mode: bool) -> None:
         """
         Constructor
@@ -97,11 +100,13 @@ class TrainingDataLoader:
         Args:
             samples_data_loader (BDDSamplesDataLoader): samples data loader
             batch_size (int): number of samples each yield should contain
+            target_image_dimensions (dict): dictionary specifying with and height images samples should have
             use_training_mode (bool): if True, then samples are shuffled
         """
 
         self.samples_data_loader = samples_data_loader
         self.batch_size = batch_size
+        self.target_image_dimensions = target_image_dimensions
         self.use_training_mode = use_training_mode
 
         self.samples_indices = list(range(len(self.samples_data_loader)))
@@ -128,7 +133,7 @@ class TrainingDataLoader:
             images.append(image)
             segmentations.append(segmentation)
 
-        return np.array(images), np.array(segmentations)
+        return self._process_batch(images, segmentations)
 
     def __iter__(self) -> typing.Iterator[typing.Tuple[np.ndarray, np.ndarray]]:
         """
@@ -143,3 +148,38 @@ class TrainingDataLoader:
 
             if self.use_training_mode is True:
                 random.shuffle(self.samples_indices)
+
+    def _process_batch(self, images: np.ndarray, segmentations: np.ndarray) -> typing.Tuple[np.ndarray, np.ndarray]:
+        """
+        Process batch into format suitable for training
+
+        Args:
+            images (np.ndarray): batch of images
+            segmentations (np.ndarray): batch of segmentations
+        """
+
+        # Pad images and segmentations to a fixed size
+        processed_images = []
+        processed_segmentations = []
+
+        for image, segmentation in zip(images, segmentations):
+
+            processed_images.append(
+                net.processing.pad_to_size(
+                    image=image,
+                    target_width=self.target_image_dimensions["width"],
+                    target_height=self.target_image_dimensions["height"],
+                    color=(0, 0, 0)
+                )
+            )
+
+            processed_segmentations.append(
+                net.processing.pad_to_size(
+                    image=segmentation,
+                    target_width=self.target_image_dimensions["width"],
+                    target_height=self.target_image_dimensions["height"],
+                    color=(0,)
+                )
+            )
+
+        return np.array(processed_images), np.array(processed_segmentations)

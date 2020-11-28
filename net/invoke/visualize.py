@@ -36,6 +36,7 @@ def visualize_data(_context, config_path):
     data_loader = net.data.TrainingDataLoader(
         samples_data_loader=samples_loader,
         batch_size=4,
+        target_image_dimensions=config["training_image_dimensions"],
         use_training_mode=True
     )
 

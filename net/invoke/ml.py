@@ -42,6 +42,7 @@ def train(_context, config_path, load_existing_model=False):
         training_data_loader = net.data.TrainingDataLoader(
             samples_data_loader=training_samples_loader,
             batch_size=config["batch_size"],
+            target_image_dimensions=config["training_image_dimensions"],
             use_training_mode=True
         )
 
@@ -72,6 +73,7 @@ def train(_context, config_path, load_existing_model=False):
         validation_data_loader = net.data.TrainingDataLoader(
             samples_data_loader=validatation_samples_loader,
             batch_size=config["batch_size"],
+            target_image_dimensions=config["training_image_dimensions"],
             use_training_mode=False
         )
 
@@ -100,6 +102,33 @@ def train(_context, config_path, load_existing_model=False):
         ) if load_existing_model else \
             net.ml.DeepLabV3PlusBuilder().get_model(categories_count=len(config["categories"]))
 
-        print(training_dataset)
-        print(validation_dataset)
-        print(model)
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+            loss=net.ml.get_temperature_scaled_sparse_softmax,
+            metrics=['accuracy']
+        )
+
+        model.fit(
+            x=training_dataset,
+            epochs=100,
+            steps_per_epoch=len(training_data_loader),
+            validation_data=validation_dataset,
+            validation_steps=len(validation_data_loader),
+            callbacks=[
+                tf.keras.callbacks.ModelCheckpoint(
+                    filepath=config["current_model_directory"],
+                    save_best_only=True,
+                    save_weights_only=False,
+                    verbose=1),
+                tf.keras.callbacks.EarlyStopping(
+                    patience=8,
+                    verbose=1),
+                tf.keras.callbacks.ReduceLROnPlateau(
+                    factor=0.1,
+                    patience=3,
+                    verbose=1),
+                tf.keras.callbacks.CSVLogger(
+                    filename=config["training_metrics_log_path"]
+                )
+            ]
+        )
