@@ -49,7 +49,7 @@ class BDDSamplesDataLoader:
             bool: True if sample is considered target sample, False otherwise
         """
 
-        if sample["attributes"]["scene"] == "highway":
+        if sample["attributes"]["scene"] in ["residential", "city street"]:
 
             for label in sample["labels"]:
 

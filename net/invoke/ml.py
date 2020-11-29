@@ -22,6 +22,7 @@ def train(_context, config_path, load_existing_model=False):
 
     import net.data
     import net.ml
+    import net.processing
     import net.utilities
 
     config = net.utilities.read_yaml(config_path)
@@ -43,7 +44,8 @@ def train(_context, config_path, load_existing_model=False):
             samples_data_loader=training_samples_loader,
             batch_size=config["batch_size"],
             target_image_dimensions=config["training_image_dimensions"],
-            use_training_mode=True
+            use_training_mode=True,
+            augmentations_pipeline=net.processing.get_augmentation_pipepline()
         )
 
         training_dataset = tf.data.Dataset.from_generator(
@@ -74,7 +76,8 @@ def train(_context, config_path, load_existing_model=False):
             samples_data_loader=validatation_samples_loader,
             batch_size=config["batch_size"],
             target_image_dimensions=config["training_image_dimensions"],
-            use_training_mode=False
+            use_training_mode=False,
+            augmentations_pipeline=None
         )
 
         validation_dataset = tf.data.Dataset.from_generator(
