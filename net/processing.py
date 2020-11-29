@@ -79,7 +79,7 @@ def get_augmentation_pipepline() -> imgaug.augmenters.Augmenter:
         imgaug.augmenters.SomeOf(
             n=(0, 3),
             children=[
-                imgaug.augmenters.Affine(rotate=(-10, 10)),
+                imgaug.augmenters.Affine(rotate=(-5, 5)),
                 imgaug.augmenters.Affine(scale=(0.5, 1.5)),
                 imgaug.augmenters.Affine(shear={"x": (-20, 20)}),
                 imgaug.augmenters.Affine(shear={"y": (-20, 20)}),
