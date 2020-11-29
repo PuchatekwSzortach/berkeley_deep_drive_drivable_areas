@@ -32,5 +32,5 @@ mlflow_tracking_uri: "http://deep_drive_mlflow:5000"
 
 training_metrics_log_path: "/tmp/training_metrics.txt"
 
-drive_recoder_movie_path: "/data/drive_recorder/chatan_2020_11_29.mp4"
-drive_recoder_predictions_movie_path: "/data/drive_recorder/chatan_2020_11_29_predictions.mp4"
+drive_recoder_input_movie_path: "/data/drive_recorder/chatan_2020_11_29.mp4"
+drive_recoder_output_movie_path: "/data/drive_recorder/chatan_2020_11_29_predictions.mp4"

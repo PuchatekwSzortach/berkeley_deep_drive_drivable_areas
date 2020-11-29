@@ -168,7 +168,7 @@ def visualize_predictions_on_movie(_context, config_path):
         }
     )
 
-    input_clip = moviepy.editor.VideoFileClip(config["drive_recoder_movie_path"])
+    input_clip = moviepy.editor.VideoFileClip(config["drive_recoder_input_movie_path"])
 
     prediction_overlay_partial = functools.partial(
         net.logging.get_prediction_overlay,
@@ -184,4 +184,4 @@ def visualize_predictions_on_movie(_context, config_path):
         return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     output_clip = input_clip.fl_image(image_transformer)
-    output_clip.write_videofile(config["chatan_2020_11_29_predictions"])
+    output_clip.write_videofile(config["drive_recoder_output_movie_path"])
