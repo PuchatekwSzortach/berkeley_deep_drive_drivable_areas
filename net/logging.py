@@ -38,12 +38,12 @@ def log_predictions(
         ) for image, segmentation in zip(images, ground_truth_segmentations)
     ]
 
-    # logger.info(
-    #     vlogging.VisualRecord(
-    #         title="ground truth segmentations",
-    #         imgs=ground_truth_overlay_segmentations
-    #     )
-    # )
+    logger.info(
+        vlogging.VisualRecord(
+            title="ground truth segmentations",
+            imgs=ground_truth_overlay_segmentations
+        )
+    )
 
     predicted_segmentations = np.array(
         [np.argmax(prediction, axis=-1) for prediction in prediction_model.predict(images)])
@@ -59,7 +59,7 @@ def log_predictions(
     logger.info(
         vlogging.VisualRecord(
             title="predicted segmentations",
-            imgs=ground_truth_overlay_segmentations + predictions_overlays
+            imgs=predictions_overlays
         )
     )
 
